@@ -1,164 +1,114 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { Heart, Loader2 } from 'lucide-react';
+import { ConfigContext } from '../ConfigContext';
+import FloatingHearts from '../components/FloatingHearts';
+import VideoHero from '../components/VideoHero';
+import PhotoGallery from '../components/PhotoGallery';
+import LoveLetter from '../components/LoveLetter';
+import CountdownTimer from '../components/CountdownTimer';
+import ProposalButton from '../components/ProposalButton';
+import MusicPlayer from '../components/MusicPlayer';
+import T5Footer from '../components/T5Footer';
+import '@fontsource/dancing-script/400.css';
+import '@fontsource/great-vibes/400.css';
 
 function SurprisePage() {
     const { id } = useParams();
     const [surprise, setSurprise] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+    // Apply dark theme when this page mounts, restore on unmount
+    useEffect(() => {
+        const prev = document.body.style.background;
+        const prevColor = document.body.style.color;
+        document.body.style.background = 'linear-gradient(160deg, #000000 0%, #0a0a0a 40%, #111111 70%, #000000 100%)';
+        document.body.style.color = '#fff';
+        return () => {
+            document.body.style.background = prev;
+            document.body.style.color = prevColor;
+        };
+    }, []);
 
     useEffect(() => {
+        async function fetchSurprise() {
+            try {
+                const { data, error } = await supabase
+                    .from('surprises')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+                if (error) throw error;
+                if (!data) { setError('Surprise not found. Please check the link.'); return; }
+                setSurprise(data);
+            } catch (err) {
+                console.error('Error fetching surprise:', err);
+                setError('Failed to load surprise. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        }
         fetchSurprise();
     }, [id]);
 
-    const fetchSurprise = async () => {
-        try {
-            const { data, error } = await supabase
-                .from('surprises')
-                .select('*')
-                .eq('id', id)
-                .single();
-
-            if (error) throw error;
-
-            if (!data) {
-                setError('Surprise not found. Please check the link.');
-                setLoading(false);
-                return;
-            }
-
-            setSurprise(data);
-            setLoading(false);
-        } catch (err) {
-            console.error('Error fetching surprise:', err);
-            setError('Failed to load surprise. Please try again later.');
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (surprise && surprise.images && surprise.images.length > 1) {
-            const interval = setInterval(() => {
-                setCurrentImageIndex((prevIndex) =>
-                    prevIndex === surprise.images.length - 1 ? 0 : prevIndex + 1
-                );
-            }, 4000); // Change image every 4 seconds
-
-            return () => clearInterval(interval);
-        }
-    }, [surprise]);
-
     if (loading) {
         return (
-            <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ textAlign: 'center' }}>
-                    <Loader2 className="spinner" size={48} style={{ color: 'var(--primary)' }} />
-                    <p style={{ marginTop: '16px', fontSize: '1.2rem' }}>Loading your surprise...</p>
-                </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+                <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: '1.5rem', color: '#ff9ff3' }}>
+                    Loading your surprise... 💕
+                </p>
             </div>
         );
     }
 
     if (error || !surprise) {
         return (
-            <div className="container">
-                <div className="card">
-                    <h1>Oops!</h1>
-                    <div className="error-message">{error || 'Surprise not found'}</div>
-                </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+                <p style={{ color: '#f87171' }}>{error || 'Surprise not found'}</p>
             </div>
         );
     }
 
+    const config = {
+        senderName: surprise.sender_name,
+        receiverName: surprise.receiver_name,
+        password: null,
+        videoUrl: null,
+        heroTitle: `For ${surprise.receiver_name}`,
+        heroSubtitle: `A special message from ${surprise.sender_name} with love 💕`,
+        loveLetter: surprise.message,
+        photos: (surprise.images || []).map((url, i) => ({
+            url,
+            caption: `Memory ${i + 1} 💕`,
+        })),
+        timeline: [],
+        quizQuestions: [],
+        reasons: [],
+        countdownDate: '2026-02-14T00:00:00',
+        musicUrl: surprise.audio_url || null,
+        yesText: 'Yes, forever! 💕',
+        noText: 'Let me think... 🤔',
+        acceptedMessage: 'Our love story continues... 🎉💕',
+    };
+
     return (
-        <div className="container">
-            {/* Floating hearts background */}
-            <div className="heart-bg">
-                {[...Array(6)].map((_, i) => (
-                    <div key={i} className="heart">💕</div>
-                ))}
-            </div>
-
-            <div className="card">
-                <h1 className="pulse">
-                    <Heart size={48} style={{ display: 'inline', marginRight: '8px' }} />
-                    For {surprise.receiver_name}
-                </h1>
-
-                <p style={{
-                    textAlign: 'center',
-                    fontSize: '1.3rem',
-                    color: 'var(--text-light)',
-                    marginBottom: '24px',
-                    fontStyle: 'italic'
-                }}>
-                    From {surprise.sender_name} with love 💕
-                </p>
-
-                {/* Image Slideshow */}
-                {surprise.images && surprise.images.length > 0 && (
-                    <div className="slideshow">
-                        {surprise.images.map((imageUrl, index) => (
-                            <img
-                                key={index}
-                                src={imageUrl}
-                                alt={`Memory ${index + 1}`}
-                                className={`slideshow-image ${index === currentImageIndex ? 'active' : ''}`}
-                            />
-                        ))}
-                    </div>
-                )}
-
-                {/* Romantic Message */}
-                <div className="message-display">
-                    "{surprise.message}"
-                </div>
-
-                {/* Audio Player */}
-                {surprise.audio_url && (
-                    <div className="audio-player">
-                        <p style={{
-                            marginBottom: '12px',
-                            fontSize: '1.1rem',
-                            color: 'var(--text-light)'
-                        }}>
-                            🎵 Listen to our song
-                        </p>
-                        <audio
-                            controls
-                            autoPlay
-                            loop
-                            src={surprise.audio_url}
-                        >
-                            Your browser does not support the audio element.
-                        </audio>
-                    </div>
-                )}
-
-                <div style={{
-                    marginTop: '32px',
-                    textAlign: 'center',
-                    padding: '24px',
-                    background: 'linear-gradient(135deg, rgba(255, 20, 147, 0.05) 0%, rgba(255, 105, 180, 0.05) 100%)',
-                    borderRadius: '12px'
-                }}>
-                    <p style={{
-                        fontSize: '1.5rem',
-                        fontFamily: "'Dancing Script', cursive",
-                        color: 'var(--primary)',
-                        marginBottom: '8px'
-                    }}>
-                        Happy Valentine's Day! 💝
-                    </p>
-                    <p style={{ color: 'var(--text-light)' }}>
-                        You mean the world to me
-                    </p>
-                </div>
-            </div>
-        </div>
+        <ConfigContext.Provider value={config}>
+            <FloatingHearts />
+            <MusicPlayer />
+            <main className="relative z-10">
+                <VideoHero />
+                <div className="section-divider" />
+                <PhotoGallery />
+                <div className="section-divider" />
+                <LoveLetter />
+                <div className="section-divider" />
+                <CountdownTimer />
+                <div className="section-divider" />
+                <ProposalButton />
+                <T5Footer />
+            </main>
+        </ConfigContext.Provider>
     );
 }
 

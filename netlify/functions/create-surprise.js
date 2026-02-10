@@ -24,7 +24,7 @@ exports.handler = async (event, context) => {
         } = JSON.parse(event.body);
 
         // Validate required fields
-        if (!surpriseId || !senderName || !receiverName || !message || !images || !audioUrl) {
+        if (!surpriseId || !senderName || !receiverName || !message || !images) {
             return {
                 statusCode: 400,
                 body: JSON.stringify({ error: 'Missing required fields' }),

@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { Heart, Upload, Music, Loader2 } from 'lucide-react';
+import { Heart, Upload, Loader2 } from 'lucide-react';
 
 const MAX_IMAGES = 5;
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
-const MAX_AUDIO_SIZE = 5 * 1024 * 1024; // 5MB
 
 function ValentineForm() {
     const [formData, setFormData] = useState({
@@ -13,7 +12,6 @@ function ValentineForm() {
         message: ''
     });
     const [images, setImages] = useState([]);
-    const [audio, setAudio] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -53,23 +51,7 @@ function ValentineForm() {
         setImages(images.filter((_, i) => i !== index));
     };
 
-    const handleAudioSelect = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
 
-        if (file.size > MAX_AUDIO_SIZE) {
-            setError('Audio file exceeds 5MB limit');
-            return;
-        }
-
-        if (!file.type.startsWith('audio/')) {
-            setError('Please select a valid audio file');
-            return;
-        }
-
-        setError('');
-        setAudio(file);
-    };
 
     const uploadFiles = async (surpriseId) => {
         const imageUrls = [];
@@ -96,29 +78,7 @@ function ValentineForm() {
             imageUrls.push(publicUrl);
         }
 
-        // Upload audio
-        let audioUrl = null;
-        if (audio) {
-            const fileExt = audio.name.split('.').pop();
-            const fileName = `${surpriseId}/audio/${Date.now()}.${fileExt}`;
-
-            const { data, error } = await supabase.storage
-                .from('valentine-media')
-                .upload(fileName, audio, {
-                    cacheControl: '3600',
-                    upsert: false
-                });
-
-            if (error) throw error;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('valentine-media')
-                .getPublicUrl(fileName);
-
-            audioUrl = publicUrl;
-        }
-
-        return { imageUrls, audioUrl };
+        return { imageUrls, audioUrl: null };
     };
 
     const generateUniqueId = () => {
@@ -140,10 +100,7 @@ function ValentineForm() {
             return;
         }
 
-        if (!audio) {
-            setError('Please upload an audio file');
-            return;
-        }
+
 
         setLoading(true);
 
@@ -325,20 +282,7 @@ function ValentineForm() {
                         )}
                     </div>
 
-                    <div className="form-group">
-                        <label>Upload Audio (MP3, max 5MB)</label>
-                        <div className="file-upload">
-                            <input
-                                type="file"
-                                accept="audio/*"
-                                onChange={handleAudioSelect}
-                            />
-                            <div className="file-upload-label">
-                                <Music size={24} />
-                                <span>{audio ? audio.name : 'Choose audio file'}</span>
-                            </div>
-                        </div>
-                    </div>
+
 
                     <button type="submit" className="btn btn-primary" disabled={loading}>
                         {loading ? (

@@ -149,8 +149,8 @@ function ValentineForm() {
                             const data = await result.json();
 
                             if (data.success) {
-                                // Redirect to success page with the surprise ID
-                                window.location.href = `/success?id=${surpriseId}`;
+                                // Redirect to surprise page so user sees the template immediately
+                                window.location.href = `/s/${surpriseId}?new=1`;
                             } else {
                                 setError('Payment verification failed. Please contact support.');
                                 setLoading(false);

@@ -3,7 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '../supabaseClient';
 import { ConfigContext } from '../ConfigContext';
-import { Template5 } from '../templates/index.js';
+import { TemplateRenderer } from '../templates/index.js';
 import { Copy, Check } from 'lucide-react';
 import '@fontsource/dancing-script/400.css';
 
@@ -72,7 +72,7 @@ export default function SurprisePage() {
     useEffect(() => {
         const prev = document.body.style.background;
         const prevColor = document.body.style.color;
-        document.body.style.background = 'linear-gradient(160deg, #000000 0%, #0a0a0a 40%, #111111 70%, #000000 100%)';
+        document.body.style.background = '#050010';
         document.body.style.color = '#fff';
         return () => {
             document.body.style.background = prev;
@@ -149,7 +149,7 @@ export default function SurprisePage() {
         <ConfigContext.Provider value={config}>
             {isNew && <ShareBanner surpriseUrl={surpriseUrl} />}
             <div style={isNew ? { paddingTop: '60px' } : {}}>
-                <Template5 />
+                <TemplateRenderer templateId={surprise.template_id || 'template-5'} />
             </div>
         </ConfigContext.Provider>
     );

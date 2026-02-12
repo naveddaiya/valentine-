@@ -1,19 +1,32 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useConfig } from "../../../ConfigContext";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 // ─── Lightbox ─────────────────────────────────────────────────────────────────
 function Lightbox({ photos, activeIndex, onClose }) {
     const [current, setCurrent] = useState(activeIndex);
-    const total = photos.length;
+    const total        = photos.length;
+    const touchStartX  = useRef(null);
 
     const prev = useCallback(() => setCurrent(c => (c - 1 + total) % total), [total]);
     const next = useCallback(() => setCurrent(c => (c + 1) % total), [total]);
 
+    // Touch swipe handlers
+    const onTouchStart = useCallback(e => {
+        touchStartX.current = e.touches[0].clientX;
+    }, []);
+
+    const onTouchEnd = useCallback(e => {
+        if (touchStartX.current === null) return;
+        const dx = e.changedTouches[0].clientX - touchStartX.current;
+        if (Math.abs(dx) > 48) dx < 0 ? next() : prev();
+        touchStartX.current = null;
+    }, [next, prev]);
+
     useEffect(() => {
         const handleKey = e => {
-            if (e.key === "Escape") onClose();
+            if (e.key === "Escape")     onClose();
             if (e.key === "ArrowLeft")  prev();
             if (e.key === "ArrowRight") next();
         };
@@ -32,11 +45,13 @@ function Lightbox({ photos, activeIndex, onClose }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
             style={{
                 position: "fixed", inset: 0, zIndex: 2000,
-                background: "rgba(0,0,0,0.96)",
+                background: "rgba(2,0,12,0.97)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                backdropFilter: "blur(8px)",
+                backdropFilter: "blur(10px)",
             }}
         >
             {/* Close */}

@@ -4,6 +4,8 @@ import { useConfig } from "../../ConfigContext";
 import PasswordGate   from "./components/PasswordGate";
 import ClickEffect    from "./components/ClickEffect";
 import FloatingHearts from "./components/FloatingHearts";
+import ScrollProgress from "./components/ScrollProgress";
+import SectionDivider from "./components/SectionDivider";
 import VideoHero      from "./components/VideoHero";
 import Timeline       from "./components/Timeline";
 import PhotoGallery   from "./components/PhotoGallery";
@@ -23,6 +25,9 @@ export default function Template5() {
 
     return (
         <>
+            {/* Scroll progress bar */}
+            <ScrollProgress />
+
             {/* Password gate overlay */}
             <AnimatePresence>
                 {!unlocked && <PasswordGate onUnlock={() => setUnlocked(true)} />}
@@ -40,25 +45,25 @@ export default function Template5() {
             <main className="relative z-10">
                 <VideoHero />
 
-                <div className="section-divider" />
+                <SectionDivider />
                 <Timeline />
 
-                <div className="section-divider" />
+                <SectionDivider />
                 <PhotoGallery />
 
-                <div className="section-divider" />
+                <SectionDivider />
                 <LoveLetter />
 
-                <div className="section-divider" />
+                <SectionDivider />
                 <ReasonsSection />
 
-                <div className="section-divider" />
+                <SectionDivider />
                 <LoveQuiz />
 
-                <div className="section-divider" />
+                <SectionDivider />
                 <CountdownTimer />
 
-                <div className="section-divider" />
+                <SectionDivider />
                 <ProposalButton />
 
                 <Footer />

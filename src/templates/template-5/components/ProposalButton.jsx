@@ -52,7 +52,7 @@ export default function ProposalButton() {
     const noLabel = noMessages[Math.min(noAttempts, noMessages.length - 1)];
 
     return (
-        <section className="py-20 px-6 relative z-10">
+        <section className="py-20 px-6 relative z-10" style={{ overflow: "hidden" }}>
             <AnimatePresence mode="wait">
                 {!accepted ? (
                     <motion.div

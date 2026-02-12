@@ -28,6 +28,7 @@ export default function Template5() {
             minHeight: "100vh",
             background: "linear-gradient(160deg, #050010 0%, #0d0020 30%, #0a0015 60%, #050010 100%)",
             color: "#fff",
+            overflowX: "hidden",
         }}>
             {/* Pink scroll-progress bar */}
             <ScrollProgress />

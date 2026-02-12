@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, ArrowLeft, Sparkles } from 'lucide-react';
 import { ConfigContext } from '../ConfigContext';
-import { Template5 } from '../templates/index.js';
+import { TemplateRenderer } from '../templates/index.js';
 import { PRICE } from '../config';
 import '@fontsource/dancing-script/400.css';
 
@@ -47,7 +47,7 @@ export default function PreviewPage() {
     const navigate = useNavigate();
 
     return (
-        <div style={{ position: 'relative', minHeight: '100vh', background: '#06010a' }}>
+        <div style={{ position: 'relative', minHeight: '100vh', background: '#06010a', overflowX: 'hidden' }}>
             {/* ── Top preview banner ─────────────────────────────────────────── */}
             <div style={{
                 position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
@@ -106,7 +106,7 @@ export default function PreviewPage() {
             {/* ── Template with sample data ─────────────────────────────────── */}
             <div style={{ paddingTop: '60px' }}>
                 <ConfigContext.Provider value={SAMPLE_CONFIG}>
-                    <Template5 />
+                    <TemplateRenderer templateId="template-5" />
                 </ConfigContext.Provider>
             </div>
 

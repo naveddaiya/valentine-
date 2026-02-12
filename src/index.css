@@ -1,11 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
-/* ---- Template-5 Animations ---- */
+/* ---- Global Animations ---- */
+
+/* Spinner (used in forms) */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Template-5 falling particles */
 @keyframes float {
-  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 0.3; }
+  0%   { transform: translateY(0) rotate(0deg);    opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.3; }
   100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
 }
 

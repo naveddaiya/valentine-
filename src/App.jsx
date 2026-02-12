@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
 import ValentineForm from './pages/ValentineForm';
-import SuccessPage from './pages/SuccessPage';
+import PreviewPage from './pages/PreviewPage';
 import SurprisePage from './pages/SurprisePage';
 import './index.css';
 
@@ -8,10 +9,10 @@ function App() {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<Navigate to="/valentine" replace />} />
-                <Route path="/valentine" element={<ValentineForm />} />
-                <Route path="/success" element={<SuccessPage />} />
-                <Route path="/s/:id" element={<SurprisePage />} />
+                <Route path="/"         element={<LandingPage />} />
+                <Route path="/preview"  element={<PreviewPage />} />
+                <Route path="/create"   element={<ValentineForm />} />
+                <Route path="/s/:id"    element={<SurprisePage />} />
             </Routes>
         </Router>
     );
